@@ -48,14 +48,25 @@ public class Client {
         ListResourceOperationWrapper listResult = gson.fromJson(response.body().charStream(), ListResourceOperationWrapper.class);
 
         if (listResult!=null && listResult.operation != null) {
-            return listResult.operation.Details;
+            if(listResult.operation.Details != null) {
+                return listResult.operation.Details;
+            }
+            else if(listResult.operation.result != null)
+            {
+                throw new IOException("Response from PMP server listing all resources returned: " + listResult.operation.result.get(1));
+            }
+            else {
+                throw new IOException("Response from PMP server listing all resources returned: null");
+            }
         }
-        else
-            throw new IOException("Response from PMP server listing all reources returned null");
+        else {
+            throw new IOException("Response from PMP server listing all resources returned: null");
+        }
     }
 
     /**
      * Return a list of all account names for the specified resource. 
+     * Each account name represents a Key ID that we want to store from PMP
      * @return A HashSet
      * @throws IOException
      */
