@@ -33,7 +33,7 @@ public class Client {
 
     public static void main(String args[]) throws IOException {
         Client c = new Client(args[0], Integer.parseInt(args[1]), args[2], args[3]);
-        for(String i : c.listKeyIds()) System.out.println(i);
+        for(String i : c.loadKeyIds()) System.out.println(i);
     }
 
     /**
@@ -70,7 +70,7 @@ public class Client {
      * @return A HashSet
      * @throws IOException
      */
-    public HashSet<String> listKeyIds() throws IOException {
+    public HashSet<String> loadKeyIds() throws IOException {
         List<Map<String, String>> resourceMap = listResources();
         Integer resourceId = null;
         
@@ -90,10 +90,10 @@ public class Client {
         ListAccountOperationWrapper listResult = gson.fromJson(response.body().charStream(), ListAccountOperationWrapper.class);
         HashSet<String> keyResources = new HashSet<String>();
 
-        if (listResult!=null && listResult.operation != null) {
-            List<Map<String, String>> accountDetails = (List<Map<String, String>>)listResult.operation.Details.get(10);
+        if (listResult!=null && listResult.operation != null && listResult.operation.Details != null) {
+            List<Map<String, String>> accountDetails = (List<Map<String, String>>)listResult.operation.Details.get("ACCOUNT LIST");
             for(Map<String, String> accountDetail : accountDetails) {
-                keyResources.add(accountDetail.get("ACCOUNT_NAME"));
+                keyResources.add(accountDetail.get("ACCOUNT NAME"));
             }
         }
         else
